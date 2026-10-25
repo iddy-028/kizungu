@@ -45,7 +45,17 @@ export default function Dashboard() {
     }
   }, [darkMode]);
 
+  function ensureJsonBinConfigured() {
+    if (!BIN_URL || !ACCESS_KEY) {
+      throw new Error(
+        "JSONBin is not configured. Check src/config/jsonbin.js and add your BIN_URL and ACCESS_KEY."
+      );
+    }
+  }
+
   async function getLatestRecord() {
+    ensureJsonBinConfigured();
+
     const response = await fetch(`${BIN_URL}/latest`, {
       headers: {
         "X-Access-Key": ACCESS_KEY,
@@ -61,6 +71,8 @@ export default function Dashboard() {
   }
 
   async function saveRecord(record) {
+    ensureJsonBinConfigured();
+
     const response = await fetch(BIN_URL, {
       method: "PUT",
       headers: {
@@ -228,19 +240,22 @@ export default function Dashboard() {
   }
 
   function replyByEmail(message) {
-    if (!message.email) {
+    const email = String(message?.email || "").trim();
+
+    if (!email) {
       setNotice("This message does not have an email address.");
       setNoticeType("error");
       return;
     }
 
-    const subject = encodeURIComponent("Re: Your message");
+    const name = String(message?.name || "there").trim();
+    const subject = encodeURIComponent("Re: Your message to Kizungu Iddy");
     const body = encodeURIComponent(
-      `Hello ${message.name || ""},\n\nThank you for contacting me.\n\nBest regards,\nKizungu Iddy`
+      `Hello ${name},\n\nThank you for contacting me.\n\n\nBest regards,\nKizungu Iddy`
     );
 
-    window.location.href =
-      `mailto:${message.email}?subject=${subject}&body=${body}`;
+    // Opens the user's default email application; it does not send automatically.
+    window.location.assign(`mailto:${email}?subject=${subject}&body=${body}`);
   }
 
   const filteredProjects = projects.filter((project) =>
@@ -1217,6 +1232,8 @@ export default function Dashboard() {
                             <button
                               type="button"
                               onClick={() => replyByEmail(message)}
+                              disabled={!message.email}
+                              title={!message.email ? "This message has no email address" : "Open your email app to reply"}
                               className={primaryButton}
                             >
                               ✉ Reply by Email
