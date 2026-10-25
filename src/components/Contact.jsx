@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 // JSONBin configuration
 const BIN_ID = "6add1820ac6210605a4f534c";
-const ACCESS_KEY = "PASTE_YOUR_WORKING_ACCESS_KEY_HERE";
+const ACCESS_KEY = "$2a$10$Bp7UOlRVeoL4byyh/X7W4uLuU8ZjuIWi5mS3MPKxekj7hFcjyw0G2";
 
 const contactDetails = [
   {
